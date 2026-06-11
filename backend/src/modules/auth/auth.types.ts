@@ -10,3 +10,8 @@ export interface LoginUserInput {
   email: string;
   password: string;
 }
+
+export interface AuthPayload {
+  userId: string;
+  role: string;
+}

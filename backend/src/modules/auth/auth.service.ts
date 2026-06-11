@@ -7,6 +7,20 @@ import { AUTH_CONSTANTS } from "../../shared/constants/auth.constants.js";
 import { generateToken } from "../../shared/utils/jwt.util.js";
 
 class AuthService {
+
+    async getCurrentUser(userId: string) {
+        const [user] = await db
+            .select()
+            .from(users)
+            .where(eq(users.id, userId));
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        return user;
+    }
+
     async registerUser(data: RegisterUserInput) {
         const [existingUser] = await db
             .select()
