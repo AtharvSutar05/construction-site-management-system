@@ -1,14 +1,10 @@
 import jwt, { type Secret } from "jsonwebtoken";
-
-interface JwtPayload {
-    userId: string;
-    role: string;
-}
+import type { AuthPayload } from "../../modules/auth/auth.types.js";
 
 const secret: Secret =
     process.env.JWT_SECRET as string;
 
-export const generateToken = (payload: JwtPayload) => {
+export const generateToken = (payload: AuthPayload) => {
     return jwt.sign(
         payload,
         secret,
@@ -20,6 +16,9 @@ export const generateToken = (payload: JwtPayload) => {
 
 export const verifyToken = (
   token: string
-) => {
-  return jwt.verify(token, secret);
+): AuthPayload => {
+  return jwt.verify(
+    token,
+    secret
+  ) as AuthPayload;
 };

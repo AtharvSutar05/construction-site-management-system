@@ -13,5 +13,5 @@ export interface LoginUserInput {
 
 export interface AuthPayload {
   userId: string;
-  role: string;
+  role: UserRole;
 }

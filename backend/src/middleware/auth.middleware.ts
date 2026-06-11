@@ -22,12 +22,10 @@ export const authMiddleware = (
         }
 
         const token = authHeader.split(" ")[1];
+        
         const decoded = verifyToken(token!);
         
-        req.user = decoded as {
-            userId: string;
-            role: string;
-        };
+        req.user = decoded;
         
         return next();
     } catch(error) {
