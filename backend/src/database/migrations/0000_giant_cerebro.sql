@@ -4,7 +4,7 @@ CREATE TABLE "users" (
 	"name" varchar(100) NOT NULL,
 	"email" varchar(255) NOT NULL,
 	"password" varchar(255) NOT NULL,
-	"role" "user_role" DEFAULT 'engineer' NOT NULL,
+	"role" "user_role" DEFAULT 'admin' NOT NULL,
 	"is_active" boolean DEFAULT true NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,

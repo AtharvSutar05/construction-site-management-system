@@ -1,5 +1,5 @@
 {
-  "id": "ec42f1a4-5f22-445e-91ed-1a26ab3c5645",
+  "id": "189d6014-9a4b-4c14-807c-45a7c42e3ebe",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -39,7 +39,7 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'engineer'"
+          "default": "'admin'"
         },
         "is_active": {
           "name": "is_active",

@@ -26,7 +26,7 @@ export const users = pgTable("users", {
     .notNull(),
 
   role: userRoleEnum("role")
-    .default("engineer")
+    .default("admin")
     .notNull(),
 
   isActive: boolean("is_active")
