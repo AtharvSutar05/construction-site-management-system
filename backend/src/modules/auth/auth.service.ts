@@ -5,6 +5,7 @@ import type { LoginUserInput, RegisterUserInput } from "./auth.types.js";
 import bcrypt from "bcryptjs";
 import { AUTH_CONSTANTS } from "../../shared/constants/auth.constants.js";
 import { generateToken } from "../../shared/utils/jwt.util.js";
+import type { UserRole } from "../../shared/enums/role.enum.js";
 
 class AuthService {
 
@@ -48,8 +49,7 @@ class AuthService {
                 id: users.id,
                 name: users.name,
                 email: users.email,
-                role: users.role,
-                createdAt: users.createdAt,
+                createdAt: users.createdAt
             });
         return user;
     }
@@ -67,16 +67,14 @@ class AuthService {
             throw new Error("Invalid credentials");
         } else {
             const token = generateToken({
-                userId: existingUser.id,
-                role: existingUser.role
+                userId: existingUser.id
             });
             return {
                 token,
                 user: {
                     id: existingUser.id,
                     name: existingUser.name,
-                    email: existingUser.email,
-                    role: existingUser.role,
+                    email: existingUser.email
                 },
             };
         }
