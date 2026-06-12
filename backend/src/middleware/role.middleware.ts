@@ -9,7 +9,7 @@ export const authorize = (
     res: Response,
     next: NextFunction
   ) => {
-    const userRole = req.user?.role;
+    const userRole = req.headers.role; // security problem 
     if (
         !userRole ||
         !allowedRoles.includes(userRole as UserRole)

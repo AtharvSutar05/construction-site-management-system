@@ -1,5 +1,3 @@
-import { UserRole } from "../../shared/enums/role.enum.js";
-
 export interface RegisterUserInput {
   name: string;
   email: string;
@@ -12,6 +10,5 @@ export interface LoginUserInput {
 }
 
 export interface AuthPayload {
-  userId: string;
-  role: UserRole;
+  userId: string
 }
