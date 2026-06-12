@@ -31,11 +31,11 @@ class AuthController {
     register = async (req: Request, res: Response) => {
         try {
             const validateData = registerSchema.parse(req.body);
-            const user = await authService.registerUser(validateData);
+            const data = await authService.registerUser(validateData);
             return res.status(201).json({
                 success: true,
                 message: "User registered successfully",
-                data: user,
+                data: data,
             });
         } catch (error) {
             return res.status(400).json({
@@ -51,11 +51,11 @@ class AuthController {
     login = async (req: Request, res: Response) => {
         try {
             const validateData = loginSchema.parse(req.body);
-            const user = await authService.loginUser(validateData);
+            const data = await authService.loginUser(validateData);
             return res.status(200).json({
                 success: true,
                 message: "User logged in successfully",
-                data: user,
+                data: data,
             });
         } catch (error) {
             return res.status(400).json({

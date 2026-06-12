@@ -5,13 +5,16 @@ import type { LoginUserInput, RegisterUserInput } from "./auth.types.js";
 import bcrypt from "bcryptjs";
 import { AUTH_CONSTANTS } from "../../shared/constants/auth.constants.js";
 import { generateToken } from "../../shared/utils/jwt.util.js";
-import type { UserRole } from "../../shared/enums/role.enum.js";
 
 class AuthService {
 
     async getCurrentUser(userId: string) {
         const [user] = await db
-            .select()
+            .select({
+                id: users.id,
+                name: users.name,
+                email: users.email
+            })
             .from(users)
             .where(eq(users.id, userId));
 
@@ -48,10 +51,18 @@ class AuthService {
             .returning({
                 id: users.id,
                 name: users.name,
-                email: users.email,
-                createdAt: users.createdAt
+                email: users.email
             });
-        return user;
+        if(!user) {
+            throw new Error("Failed to register");
+        }
+        const token = generateToken({
+            userId: user.id
+        })
+        return {
+            token,
+            user
+        };
     }
 
     async loginUser(data: LoginUserInput) {
@@ -65,19 +76,18 @@ class AuthService {
         const authorizedUser = await bcrypt.compare(data.password, existingUser.password);
         if (!authorizedUser) {
             throw new Error("Invalid credentials");
-        } else {
-            const token = generateToken({
-                userId: existingUser.id
-            });
-            return {
-                token,
-                user: {
-                    id: existingUser.id,
-                    name: existingUser.name,
-                    email: existingUser.email
-                },
-            };
-        }
+        } 
+        const token = generateToken({
+            userId: existingUser.id
+        });
+        return {
+            token,
+            user: {
+                id: existingUser.id,
+                name: existingUser.name,
+                email: existingUser.email
+            },
+        };
     }
 }
 
