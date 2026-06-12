@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import { authService } from "./auth.service.js";
-import { loginSchema, registerSchema } from "./auth.validation.js";
 
 class AuthController {
 
@@ -30,8 +29,7 @@ class AuthController {
 
     register = async (req: Request, res: Response) => {
         try {
-            const validateData = registerSchema.parse(req.body);
-            const data = await authService.registerUser(validateData);
+            const data = await authService.registerUser(req.body);
             return res.status(201).json({
                 success: true,
                 message: "User registered successfully",
@@ -50,8 +48,7 @@ class AuthController {
 
     login = async (req: Request, res: Response) => {
         try {
-            const validateData = loginSchema.parse(req.body);
-            const data = await authService.loginUser(validateData);
+            const data = await authService.loginUser(req.body);
             return res.status(200).json({
                 success: true,
                 message: "User logged in successfully",

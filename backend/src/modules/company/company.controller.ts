@@ -1,10 +1,5 @@
 import type { Request, Response } from "express";
 import { companyService } from "./company.service.js";
-import { createCompanySchema, updateCompanySchema } from "./company.validation.js";
-
-interface CompanyParams {
-    companyId: string;
-}
 
 class CompanyController {
 
@@ -38,10 +33,9 @@ class CompanyController {
     ) => {
         try {
             const userId = req.user!.userId;
-            const validateData = createCompanySchema.parse(req.body);
             const company = await companyService.createCompany(
                     userId, 
-                    validateData
+                    req.body
                 );
             return res.status(201).json({
                 success: true,
@@ -60,17 +54,22 @@ class CompanyController {
     }
 
     updateCompany = async(
-        req: Request<CompanyParams>,
+        req: Request,
         res: Response
     ) => {
         try {
             const userId = req.user!.userId;
-            const { companyId } = req.params;
-            const validateData = updateCompanySchema.parse(req.body);
+            const companyId = req.params.companyId;
+            if (!companyId || Array.isArray(companyId)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Company id is required",
+                });
+            }
             const updatedCompany = await companyService.updateCompany(
                 userId,
                 companyId,
-                validateData
+                req.body
             );
 
              return res.status(200).json({
@@ -90,12 +89,18 @@ class CompanyController {
     }
 
     deleteCompany = async(
-        req: Request<CompanyParams>,
+        req: Request,
         res: Response
     ) => {
         try {
             const userId = req.user!.userId;
-            const {companyId} = req.params;
+            const companyId = req.params.companyId;
+            if (!companyId || Array.isArray(companyId)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Company id is required",
+                });
+            }
             await companyService.deleteCompany(
                 userId,
                 companyId
