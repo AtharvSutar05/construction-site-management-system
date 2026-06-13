@@ -3,6 +3,7 @@ import cors from "cors";
 import { authRouter } from "./modules/auth/auth.routes.js";
 import { authMiddleware } from "./middleware/auth.middleware.js";
 import { companyRouter } from "./modules/company/company.routes.js";
+import { companyMemberRouter } from "./modules/company_member/company_member.routes.js";
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 // routes
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/company", authMiddleware, companyRouter);
+app.use("/api/v1/company-members", authMiddleware, companyMemberRouter);
 app.get("/health", (_, res) => {
   res.status(200).json({
     success: true,

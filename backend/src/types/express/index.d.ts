@@ -1,4 +1,5 @@
 import "express";
+import type { UserRole } from "../../shared/enums/role.enum";
 
 declare global {
   namespace Express {
@@ -6,6 +7,11 @@ declare global {
       user?: {
         userId: string
       };
+      membership?: {
+        userId: string;
+        companyId: string;
+        role: UserRole;
+      }
     }
   }
 }

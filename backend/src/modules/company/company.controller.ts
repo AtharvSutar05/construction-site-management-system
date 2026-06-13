@@ -8,9 +8,12 @@ class CompanyController {
         res: Response
     ) => {
         try {
-            const userId = req.user!.userId;
+            if(!req.membership) {
+                throw new Error("Membership not found");
+            }
+            const companyId = req.membership.companyId;
 
-            const company = await companyService.getMyCompany(userId);
+            const company = await companyService.getMyCompany(companyId);
 
             return res.status(200).json({
                 success: true,
@@ -32,15 +35,18 @@ class CompanyController {
         res: Response
     ) => {
         try {
-            const userId = req.user!.userId;
-            const company = await companyService.createCompany(
+            if(!req.user) {
+                throw new Error("User not found");
+            }
+            const userId = req.user.userId;
+            const data = await companyService.createCompany(
                     userId, 
                     req.body
                 );
             return res.status(201).json({
                 success: true,
                 message: "Company created successfully",
-                data: company,
+                data: data,
             });
         } catch(error) {
             return res.status(400).json({
@@ -58,21 +64,21 @@ class CompanyController {
         res: Response
     ) => {
         try {
-            const userId = req.user!.userId;
-            const companyId = req.params.companyId;
-            if (!companyId || Array.isArray(companyId)) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Company id is required",
-                });
+            if(!req.user) {
+                throw new Error("User not found");
             }
+            if(!req.membership) {
+                throw new Error("Membership not found");
+            }
+            const userId = req.user.userId;
+            const companyId = req.membership.companyId;
             const updatedCompany = await companyService.updateCompany(
                 userId,
                 companyId,
                 req.body
             );
 
-             return res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 message: "Company updated successfully",
                 data: updatedCompany,
@@ -93,14 +99,14 @@ class CompanyController {
         res: Response
     ) => {
         try {
-            const userId = req.user!.userId;
-            const companyId = req.params.companyId;
-            if (!companyId || Array.isArray(companyId)) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Company id is required",
-                });
+            if(!req.user) {
+                throw new Error("User not found");
             }
+            if(!req.membership) {
+                throw new Error("Membership not found");
+            }
+            const userId = req.user.userId;
+            const companyId = req.membership.companyId;
             await companyService.deleteCompany(
                 userId,
                 companyId
