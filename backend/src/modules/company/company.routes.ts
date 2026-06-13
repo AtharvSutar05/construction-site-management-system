@@ -2,6 +2,8 @@ import { Router } from "express";
 import { companyController } from "./company.controller.js";
 import { validate } from "../../middleware/validate.middleware.js";
 import { createCompanySchema, updateCompanySchema } from "./company.validation.js";
+import { authorizeCompanyRole } from "../../middleware/role.middleware.js";
+import { UserRole } from "../../shared/enums/role.enum.js";
 
 export const companyRouter = Router();
 
@@ -17,12 +19,14 @@ companyRouter.get(
 );
 
 companyRouter.patch(
-    "/:companyId",
+    "/",
+    authorizeCompanyRole(UserRole.ADMIN),
     validate(updateCompanySchema),
     companyController.updateCompany
 );
 
 companyRouter.delete(
-    "/:companyId",
+    "/",
+    authorizeCompanyRole(UserRole.ADMIN),
     companyController.deleteCompany
 );

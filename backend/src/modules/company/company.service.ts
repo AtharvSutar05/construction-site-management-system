@@ -1,51 +1,63 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "../../database/db.js";
-import { companies, type Company } from "../../database/schema/companies.schema.js";
+import { companies, type Company, companyMembers } from "../../database/schema/index.js";
 import type { CreateCompanyInput, UpdateCompanyInput } from "./company.validation.js";
+import { UserRole } from "../../shared/enums/role.enum.js";
 
 class CompanyService {
 
-    private async findCompanyByOwner(
-        userId: string
-    ): Promise<Company | undefined> {
-        const [company] = await db
-        .select()
-        .from(companies)
-        .where(eq(companies.createdBy, userId));
-
-        return company;
-    }
-
     async getMyCompany(
-        userId: string
+        companyId: string
     ) {
-        const existingCompany = await this.findCompanyByOwner(userId);
-        if (existingCompany == undefined) {
+        const [company] = await db
+            .select()
+            .from(companies)
+            .where(eq(companies.id, companyId));
+        
+        if (!company) {
             throw new Error("Company not found");
         }
-        return existingCompany;
+        return company;
     }
 
     async createCompany(
         userId: string,
         data: CreateCompanyInput,
     ): Promise<Company> {
-        const existingCompany = await this.findCompanyByOwner(userId);
-        if (existingCompany) {
-            throw new Error("Company already exists");
-        }
-        const [company] = await db
-            .insert(companies)
-            .values({
-                name: data.name,
-                description: data.description,
-                createdBy: userId
-            })
-            .returning();
+        const [membership] = await db
+            .select()
+            .from(companyMembers)
+            .where(eq(companyMembers.userId, userId));
 
-        if (!company) {
-            throw new Error("Failed to create company");
+        if (membership) {
+            throw new Error(
+                "Already belongs to a company"
+            );
         }
+        const company = await db.transaction(async (tx) => {
+            const [newCompany] = await tx
+                .insert(companies)
+                .values({
+                    createdBy: userId,
+                    name: data.name,
+                    description: data.description
+                })
+                .returning();
+
+            if(!newCompany) {
+                throw new Error("Failed to create company");
+            }
+            
+            await tx
+                .insert(companyMembers)
+                .values({
+                    userId,
+                    companyId: newCompany.id,
+                    role: UserRole.ADMIN
+                });
+
+            return newCompany;
+        });
 
         return company;
     }
