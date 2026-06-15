@@ -3,6 +3,7 @@ import { companyMembers } from "../database/schema/company_members.schema.js";
 import { db } from "../database/db.js";
 import { eq } from "drizzle-orm";
 import { UserRole } from "../shared/enums/role.enum.js";
+import { NotFoundError, ForbiddenError } from "../shared/errors/index.js";
 
 export const authorizeCompanyRole = (
   ...allowedRoles: UserRole[]
@@ -12,24 +13,32 @@ export const authorizeCompanyRole = (
     res: Response,
     next: NextFunction
   ) => {
-    const userId = req.user?.userId;
-    const [membership] = await db
-      .select()
-      .from(companyMembers)
-      .where(eq(companyMembers.userId, userId!));
+    try {
+      const userId = req.user!.userId;
+      const [membership] = await db
+        .select()
+        .from(companyMembers)
+        .where(eq(companyMembers.userId, userId!));
 
-    if (!membership) {
-      return next(new Error("Not a company member"));
-    }
+      if (!membership) {
+        return next(
+          new ForbiddenError("Company membership required")
+        );
+      }
 
-    if (!allowedRoles.includes(membership.role)) {
-      return next(new Error("Forbidden"));
+      if (!allowedRoles.includes(membership.role)) {
+        return next(
+          new ForbiddenError("Forbidden")
+        );
+      }
+      req.membership = {
+        userId: membership.userId,
+        companyId: membership.companyId,
+        role: membership.role,
+      };
+      next();
+    } catch (error) {
+      next(error);
     }
-    req.membership = {
-      userId: membership.userId,
-      companyId: membership.companyId,
-      role: membership.role,
-    };
-    return next();
   };
 };

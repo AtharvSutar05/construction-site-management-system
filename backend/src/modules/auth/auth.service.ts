@@ -5,6 +5,7 @@ import type { LoginUserInput, RegisterUserInput } from "./auth.types.js";
 import bcrypt from "bcryptjs";
 import { AUTH_CONSTANTS } from "../../shared/constants/auth.constants.js";
 import { generateToken } from "../../shared/utils/jwt.util.js";
+import { NotFoundError, ConflictError, UnauthorizedError } from "../../shared/errors/index.js";
 
 class AuthService {
 
@@ -19,7 +20,7 @@ class AuthService {
             .where(eq(users.id, userId));
 
         if (!user) {
-            throw new Error("User not found");
+            throw new NotFoundError("User not found");
         }
 
         return user;
@@ -32,7 +33,7 @@ class AuthService {
             .where(eq(users.email, data.email));
 
         if (existingUser) {
-            throw new Error("Email already registered");
+            throw new ConflictError("Email already registered");
         }
 
         const hashedPassword = await bcrypt.hash(
@@ -71,11 +72,11 @@ class AuthService {
             .from(users)
             .where(eq(users.email, data.email));
         if (!existingUser) {
-            throw new Error("Invalid credentials");
+            throw new UnauthorizedError("Invalid credentials");
         }
         const authorizedUser = await bcrypt.compare(data.password, existingUser.password);
         if (!authorizedUser) {
-            throw new Error("Invalid credentials");
+            throw new UnauthorizedError("Invalid credentials");
         } 
         const token = generateToken({
             userId: existingUser.id

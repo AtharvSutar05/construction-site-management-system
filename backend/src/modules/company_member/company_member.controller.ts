@@ -1,48 +1,39 @@
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { companyMemberSevice } from "./company_member.service.js";
+import { BadRequestError } from "../../shared/errors/index.js";
 
 class CompanyMemberController {
 
     getCompanyMembers = async (
         req: Request,
-        res: Response
+        res: Response,
+        next: NextFunction
     ) => {
         try {
-            if(!req.membership) {
-                throw new Error("Membership not found");
-            }
-            const companyId = req.membership.companyId;
-            const members = await companyMemberSevice
+            const companyId = req.membership!.companyId;
+            const data = await companyMemberSevice
                 .getCompanyMembers(
                     companyId
                 );
             return res.status(200)
                 .json({
                     success: true,
-                    data: members
+                    data
                 });
 
         } catch(error) {
-             return res.status(400).json({
-                success: false,
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : "Failed to fetch members",
-            });
+            next(error);
         }
     }
 
     inviteMember = async (
         req: Request,
-        res: Response
+        res: Response,
+        next: NextFunction
     ) => {
         try {
-            if (!req.membership) {
-                throw new Error("Membership not found");
-            }
-            const companyId = req.membership.companyId;
-            const newCompanyMember = await companyMemberSevice
+            const companyId = req.membership!.companyId;
+            const data = await companyMemberSevice
                 .inviteCompanyMember(
                     companyId,
                     req.body
@@ -51,40 +42,26 @@ class CompanyMemberController {
                 .json({
                     success: true,
                     message: "Member added successfully",
-                    data: newCompanyMember
+                    data
                 });
         } catch (error) {
-            return res.status(400).json({
-                success: false,
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : "Failed to add company member",
-            });
+            next(error);
         }
     }
 
     updateMemberRole = async (
         req: Request,
-        res: Response
+        res: Response,
+        next: NextFunction
     ) => {
         try {
-            if(!req.membership) {
-                throw new Error("Membership not found");
-            }
-            if(!req.user) {
-                throw new Error("User not found");
-            }
-            const userId = req.user.userId;
-            const companyId = req.membership.companyId;
+            const userId = req.user!.userId;
+            const companyId = req.membership!.companyId;
             const memberId = req.params.memberId;
             if(!memberId || Array.isArray(memberId)) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Member id is required",
-                });
+                return new BadRequestError("Member id is required");
             }
-            const updatedMember = await companyMemberSevice
+            const data = await companyMemberSevice
                 .updateMemberRole(
                     userId,
                     companyId,
@@ -95,32 +72,21 @@ class CompanyMemberController {
             return res.status(200).json({
                 success: true,
                 message: "Member role updated successfully",
-                data: updatedMember,
+                data,
             });
         } catch(error) {
-            return res.status(400).json({
-                success: false,
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : "Failed to update role",
-            });
+            next(error);
         }
     }
 
     deleteMember = async (
         req: Request,
-        res: Response
+        res: Response,
+        next: NextFunction
     ) => {
         try {
-            if(!req.membership) {
-                throw new Error("Membership not found");
-            }
-            if(!req.user) {
-                throw new Error("User not found");
-            }
-            const userId = req.user.userId;
-            const companyId = req.membership.companyId;
+            const userId = req.user!.userId;
+            const companyId = req.membership!.companyId;
             const memberId = req.params.memberId;
             if(!memberId || Array.isArray(memberId)) {
                 return res.status(400).json({
@@ -128,25 +94,15 @@ class CompanyMemberController {
                     message: "Member id is required",
                 });
             }
-            const deletedMember = await companyMemberSevice
+            await companyMemberSevice
                 .deleteMember(
                     userId,
                     companyId,
                     memberId
                 );
-            return res.status(200).json({
-                success: true,
-                message: "Member deleted successfully",
-                data: deletedMember
-            });
+            return res.sendStatus(204);
         } catch(error) {
-            return res.status(400).json({
-                success: false,
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : "Failed to delete member",
-            });
+            next(error);
         }
     }
 }

@@ -4,6 +4,7 @@ import { authRouter } from "./modules/auth/auth.routes.js";
 import { authMiddleware } from "./middleware/auth.middleware.js";
 import { companyRouter } from "./modules/company/company.routes.js";
 import { companyMemberRouter } from "./modules/company_member/company_member.routes.js";
+import { errorMiddleware } from "./middleware/error.middleware.js";
 
 const app = express();
 
@@ -22,6 +23,8 @@ app.get("/health", (_, res) => {
     message: "Server is healthy",
   });
 });
+
+app.use(errorMiddleware);
 
 export default app;
 

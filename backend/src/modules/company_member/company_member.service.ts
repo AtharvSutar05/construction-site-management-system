@@ -1,7 +1,8 @@
 import type { InviteMemberInput, UpdateMemberRoleInput } from "./company_member.validation.js";
 import { users, companyMembers } from "../../database/schema/index.js";
 import { db } from "../../database/db.js";
-import {eq } from "drizzle-orm";
+import {and, eq } from "drizzle-orm";
+import { ConflictError, ForbiddenError, NotFoundError } from "../../shared/errors/index.js";
 
 class CompanyMemberSevice {
     async getCompanyMembers(
@@ -37,7 +38,7 @@ class CompanyMemberSevice {
             .from(users)
             .where(eq(users.email, data.email));
         if(!user) {
-            throw new Error("User does not exist");
+            throw new NotFoundError("User does not exist");
         }
         const [existingMember] = await db
             .select()
@@ -45,9 +46,9 @@ class CompanyMemberSevice {
             .where(eq(companyMembers.userId, user.id));
         
         if(existingMember) {
-            throw new Error("User is already a member of company");
+            throw new ConflictError("User is already a member of company");
         }
-        const newCompanyMember = await db   
+        const [newMember] = await db   
             .insert(companyMembers)
             .values({
                 userId: user.id,
@@ -55,7 +56,7 @@ class CompanyMemberSevice {
                 role: data.role
             })
             .returning();
-        return newCompanyMember;
+        return newMember;
     }
 
     async updateMemberRole(
@@ -67,19 +68,18 @@ class CompanyMemberSevice {
         const [member] = await db
             .select()
             .from(companyMembers)
-            .where(eq(companyMembers.id, memberId));
+            .where(
+                and(
+                    eq(companyMembers.id, memberId), 
+                    eq(companyMembers.companyId, companyId)
+                )
+            );
 
         if(!member) {
-            throw new Error("Member not found");
-        }
-
-        if(member.companyId !== companyId) {
-            throw new Error("Member not found");
+            throw new NotFoundError("Member not found");
         }
         if (member.userId === currentUserId) {
-            throw new Error(
-                "You cannot change your own role"
-            );
+            throw new ForbiddenError("You cannot change your own role");
         }
         const [updatedMember] = await db
             .update(companyMembers)
@@ -99,18 +99,18 @@ class CompanyMemberSevice {
         const [member] = await db
             .select()
             .from(companyMembers)
-            .where(eq(companyMembers.id, memberId));
+            .where(
+                and(
+                    eq(companyMembers.id, memberId), 
+                    eq(companyMembers.companyId, companyId)
+                )
+            );
 
         if(!member) {
-            throw new Error("Member not found");
-        }
-        if(member.companyId !== companyId) {
-            throw new Error("Member not found");
+            throw new NotFoundError("Member not found");
         }
         if (member.userId === currentUserId) {
-            throw new Error(
-                "You cannot remove your own membership"
-            );
+            throw new ForbiddenError("You cannot remove your own membership");
         }
         const [deletedMember] = await db
             .delete(companyMembers)

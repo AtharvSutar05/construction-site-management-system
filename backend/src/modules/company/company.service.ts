@@ -3,6 +3,7 @@ import { db } from "../../database/db.js";
 import { companies, type Company, companyMembers } from "../../database/schema/index.js";
 import type { CreateCompanyInput, UpdateCompanyInput } from "./company.validation.js";
 import { UserRole } from "../../shared/enums/role.enum.js";
+import { ConflictError, NotFoundError } from "../../shared/errors/index.js";
 
 class CompanyService {
 
@@ -15,7 +16,7 @@ class CompanyService {
             .where(eq(companies.id, companyId));
         
         if (!company) {
-            throw new Error("Company not found");
+            throw new NotFoundError("Company not found");
         }
         return company;
     }
@@ -30,9 +31,7 @@ class CompanyService {
             .where(eq(companyMembers.userId, userId));
 
         if (membership) {
-            throw new Error(
-                "Already belongs to a company"
-            );
+            throw new ConflictError("Already belongs to a company");
         }
         const company = await db.transaction(async (tx) => {
             const [newCompany] = await tx
@@ -81,7 +80,7 @@ class CompanyService {
             )
             .returning();
         if(!updatedCompany) {
-            throw new Error("Company not found");
+            throw new NotFoundError("Company not found");
         }
         return updatedCompany;
     }
@@ -101,7 +100,7 @@ class CompanyService {
             .returning();
 
         if(!deletedCompany) {
-            throw new Error("Company not found");
+            throw new NotFoundError("Company not found");
         }
     }
 }

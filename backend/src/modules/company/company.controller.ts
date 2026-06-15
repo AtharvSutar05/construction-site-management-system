@@ -1,44 +1,34 @@
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { companyService } from "./company.service.js";
 
 class CompanyController {
 
     getMyCompany = async (
         req: Request,
-        res: Response
+        res: Response,
+        next: NextFunction
     ) => {
         try {
-            if(!req.membership) {
-                throw new Error("Membership not found");
-            }
-            const companyId = req.membership.companyId;
+            const companyId = req.membership!.companyId;
 
-            const company = await companyService.getMyCompany(companyId);
+            const data = await companyService.getMyCompany(companyId);
 
             return res.status(200).json({
                 success: true,
-                data: company,
+                data,
             });
         } catch (error) {
-            return res.status(404).json({
-                success: false,
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : "Company not found",
-            });
+            next(error);
         }
     }
 
     createCompany = async(
         req: Request,
-        res: Response
+        res: Response,
+        next: NextFunction
     ) => {
         try {
-            if(!req.user) {
-                throw new Error("User not found");
-            }
-            const userId = req.user.userId;
+            const userId = req.user!.userId;
             const data = await companyService.createCompany(
                     userId, 
                     req.body
@@ -46,33 +36,22 @@ class CompanyController {
             return res.status(201).json({
                 success: true,
                 message: "Company created successfully",
-                data: data,
+                data,
             });
         } catch(error) {
-            return res.status(400).json({
-                success: false,
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : "Failed to create company",
-            });
+            next(error);
         }
     }
 
     updateCompany = async(
         req: Request,
-        res: Response
+        res: Response,
+        next: NextFunction
     ) => {
         try {
-            if(!req.user) {
-                throw new Error("User not found");
-            }
-            if(!req.membership) {
-                throw new Error("Membership not found");
-            }
-            const userId = req.user.userId;
-            const companyId = req.membership.companyId;
-            const updatedCompany = await companyService.updateCompany(
+            const userId = req.user!.userId;
+            const companyId = req.membership!.companyId;
+            const data = await companyService.updateCompany(
                 userId,
                 companyId,
                 req.body
@@ -81,48 +60,28 @@ class CompanyController {
             return res.status(200).json({
                 success: true,
                 message: "Company updated successfully",
-                data: updatedCompany,
+                data,
             });
         } catch(error) {
-            return res.status(400).json({
-                success: false,
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : "Failed to update company",
-            });
+            next(error);
         }
     }
 
     deleteCompany = async(
         req: Request,
-        res: Response
+        res: Response,
+        next: NextFunction
     ) => {
         try {
-            if(!req.user) {
-                throw new Error("User not found");
-            }
-            if(!req.membership) {
-                throw new Error("Membership not found");
-            }
-            const userId = req.user.userId;
-            const companyId = req.membership.companyId;
+            const userId = req.user!.userId;
+            const companyId = req.membership!.companyId;
             await companyService.deleteCompany(
                 userId,
                 companyId
             );
-            return res.status(200).json({
-                success: true,
-                message: "Company deleted successfully",
-            });
+            return res.sendStatus(204);
         } catch(error) {
-            return res.status(400).json({
-                success: false,
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : "Failed to delete company",
-            });
+            next(error);
         }
     }
 }

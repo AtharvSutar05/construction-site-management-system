@@ -1,67 +1,56 @@
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { authService } from "./auth.service.js";
 
 class AuthController {
 
-    me = async (req: Request, res: Response) => {
+    me = async (
+        req: Request, 
+        res: Response, 
+        next: NextFunction
+    ) => {
         try {
-            const user = await authService.getCurrentUser(req.user!.userId); 
+            const data = await authService.getCurrentUser(req.user!.userId); 
             return res.status(200)
                 .json({
                     success: true,
-                    data: {
-                        "id": user?.id,
-                        "name": user?.name,
-                        "email": user?.email
-                    }
+                    data
                 });
         } catch (error) {
-            return res.status(404)
-                .json({
-                    success: false,
-                    message: 
-                        error instanceof Error
-                        ? error.message
-                        : "Failed to fetch user",
-                });
+            next(error);
         }
     }
 
-    register = async (req: Request, res: Response) => {
+    register = async (
+        req: Request, 
+        res: Response,
+        next: NextFunction
+    ) => {
         try {
             const data = await authService.registerUser(req.body);
             return res.status(201).json({
                 success: true,
                 message: "User registered successfully",
-                data: data,
+                data,
             });
         } catch (error) {
-            return res.status(400).json({
-                success: false,
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : "Something went wrong",
-            });
+            next(error);
         }
     }
 
-    login = async (req: Request, res: Response) => {
+    login = async (
+        req: Request, 
+        res: Response,
+        next: NextFunction
+    ) => {
         try {
             const data = await authService.loginUser(req.body);
             return res.status(200).json({
                 success: true,
                 message: "User logged in successfully",
-                data: data,
+                data,
             });
         } catch (error) {
-            return res.status(400).json({
-                success: false,
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : "Something went wrong",
-            });
+            next(error);
         }
     }
 }
