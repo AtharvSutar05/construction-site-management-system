@@ -1,6 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
 import { companyMemberSevice } from "./company_member.service.js";
-import { BadRequestError } from "../../shared/errors/index.js";
+
+interface MemberParams {
+    memberId: string;
+}
 
 class CompanyMemberController {
 
@@ -21,7 +24,7 @@ class CompanyMemberController {
                     data
                 });
 
-        } catch(error) {
+        } catch (error) {
             next(error);
         }
     }
@@ -50,17 +53,14 @@ class CompanyMemberController {
     }
 
     updateMemberRole = async (
-        req: Request,
+        req: Request<MemberParams>,
         res: Response,
         next: NextFunction
     ) => {
         try {
             const userId = req.user!.userId;
             const companyId = req.membership!.companyId;
-            const memberId = req.params.memberId;
-            if(!memberId || Array.isArray(memberId)) {
-                return new BadRequestError("Member id is required");
-            }
+            const { memberId } = req.params;
             const data = await companyMemberSevice
                 .updateMemberRole(
                     userId,
@@ -68,32 +68,26 @@ class CompanyMemberController {
                     memberId,
                     req.body
                 );
-            
+
             return res.status(200).json({
                 success: true,
                 message: "Member role updated successfully",
                 data,
             });
-        } catch(error) {
+        } catch (error) {
             next(error);
         }
     }
 
     deleteMember = async (
-        req: Request,
+        req: Request<MemberParams>,
         res: Response,
         next: NextFunction
     ) => {
         try {
             const userId = req.user!.userId;
             const companyId = req.membership!.companyId;
-            const memberId = req.params.memberId;
-            if(!memberId || Array.isArray(memberId)) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Member id is required",
-                });
-            }
+            const { memberId } = req.params;
             await companyMemberSevice
                 .deleteMember(
                     userId,
@@ -101,7 +95,7 @@ class CompanyMemberController {
                     memberId
                 );
             return res.sendStatus(204);
-        } catch(error) {
+        } catch (error) {
             next(error);
         }
     }

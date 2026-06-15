@@ -15,6 +15,11 @@ companyRouter.post(
 
 companyRouter.get(
     "/me",
+    authorizeCompanyRole(
+        UserRole.ADMIN,
+        UserRole.MANAGER,
+        UserRole.ENGINEER
+    ),
     companyController.getMyCompany
 );
 
