@@ -1,10 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { companyMemberSevice } from "./company_member.service.js";
 
-interface MemberParams {
-    memberId: string;
-}
-
 class CompanyMemberController {
 
     getCompanyMembers = async (
@@ -53,14 +49,14 @@ class CompanyMemberController {
     }
 
     updateMemberRole = async (
-        req: Request<MemberParams>,
+        req: Request,
         res: Response,
         next: NextFunction
     ) => {
         try {
             const userId = req.user!.userId;
             const companyId = req.membership!.companyId;
-            const { memberId } = req.params;
+            const memberId = req.params.memberId as string;
             const data = await companyMemberSevice
                 .updateMemberRole(
                     userId,
@@ -80,14 +76,14 @@ class CompanyMemberController {
     }
 
     deleteMember = async (
-        req: Request<MemberParams>,
+        req: Request,
         res: Response,
         next: NextFunction
     ) => {
         try {
             const userId = req.user!.userId;
             const companyId = req.membership!.companyId;
-            const { memberId } = req.params;
+            const memberId  = req.params.memberId as string;
             await companyMemberSevice
                 .deleteMember(
                     userId,
