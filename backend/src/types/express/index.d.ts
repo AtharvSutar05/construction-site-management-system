@@ -8,7 +8,7 @@ declare global {
         userId: string
       };
       membership?: {
-        userId: string;
+        memberId: string;
         companyId: string;
         role: UserRole;
       }

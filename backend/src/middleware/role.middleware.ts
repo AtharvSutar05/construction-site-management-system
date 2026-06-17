@@ -16,7 +16,11 @@ export const authorizeCompanyRole = (
     try {
       const userId = req.user!.userId;
       const [membership] = await db
-        .select()
+        .select({
+          id: companyMembers.id,
+          companyId: companyMembers.companyId,
+          role: companyMembers.role
+        })
         .from(companyMembers)
         .where(eq(companyMembers.userId, userId!));
 
@@ -32,7 +36,7 @@ export const authorizeCompanyRole = (
         );
       }
       req.membership = {
-        userId: membership.userId,
+        memberId: membership.id,
         companyId: membership.companyId,
         role: membership.role,
       };

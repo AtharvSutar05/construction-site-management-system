@@ -25,3 +25,13 @@ siteAssignmentRouter.get(
     ),
     siteAssignmentController.getMembersAssignedToSite
 );
+
+siteAssignmentRouter.get(
+    "/",
+    authorizeCompanyRole(
+        UserRole.ADMIN,
+        UserRole.MANAGER,
+        UserRole.ENGINEER
+    ),
+    siteAssignmentController.getSitesAssignedToMember
+);

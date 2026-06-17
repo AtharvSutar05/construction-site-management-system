@@ -103,6 +103,34 @@ class SiteAssignmentService {
 
         return assignedMembers;
     }
+
+    async getSitesAssignedToMember(
+        memberId: string,
+        companyId: string,
+    ) {
+        const assignedSites = await db
+            .select({
+                assignmentId: siteAssignments.id,
+                siteId: sites.id,
+                name: sites.name,
+                description: sites.description,
+                assignedBy: siteAssignments.assignedBy,
+                assigneAt: siteAssignments.assignedAt
+            })
+            .from(siteAssignments)
+            .innerJoin(
+                sites,
+                eq(siteAssignments.siteId, sites.id)
+            )
+            .where(
+                and(
+                    eq(siteAssignments.companyMemberId, memberId),
+                    eq(sites.companyId, companyId)
+                )
+            );
+
+        return assignedSites;
+    }
 }
 
 export const siteAssignmentService = new SiteAssignmentService();
