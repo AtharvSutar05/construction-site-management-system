@@ -6,6 +6,7 @@ import { companyRouter } from "./modules/company/company.routes.js";
 import { companyMemberRouter } from "./modules/company_member/company_member.routes.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { siteRouter } from "./modules/site/site.routes.js";
+import { siteAssignmentRouter } from "./modules/site_assignment/site_assignment.routes.js";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/company", authMiddleware, companyRouter);
 app.use("/api/v1/company-members", authMiddleware, companyMemberRouter);
 app.use("/api/v1/sites", authMiddleware, siteRouter);
+app.use("/api/v1/site-assignments", authMiddleware, siteAssignmentRouter);
 app.get("/health", (_, res) => {
   res.status(200).json({
     success: true,
