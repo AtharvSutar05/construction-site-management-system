@@ -1,10 +1,12 @@
 import express from "express";
 import cors from "cors";
-import { authRouter } from "./modules/auth/auth.routes.js";
+
 import { authMiddleware } from "./middleware/auth.middleware.js";
+import { errorMiddleware } from "./middleware/error.middleware.js";
+
+import { authRouter } from "./modules/auth/auth.routes.js";
 import { companyRouter } from "./modules/company/company.routes.js";
 import { companyMemberRouter } from "./modules/company_member/company_member.routes.js";
-import { errorMiddleware } from "./middleware/error.middleware.js";
 import { siteRouter } from "./modules/site/site.routes.js";
 import { siteAssignmentRouter } from "./modules/site_assignment/site_assignment.routes.js";
 
