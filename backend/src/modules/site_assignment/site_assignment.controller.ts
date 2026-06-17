@@ -73,6 +73,26 @@ class SiteAssignmentController {
             next(error);
         }
     }
+
+    unassignSiteFromMember = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const companyId = req.membership!.companyId;
+            const assignmentId = req.params.assignmentId as string;
+
+            await siteAssignmentService.unassignSiteFromMember(
+                assignmentId,
+                companyId
+            );
+
+            return res.sendStatus(204);
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export const siteAssignmentController = new SiteAssignmentController();

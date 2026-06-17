@@ -131,6 +131,38 @@ class SiteAssignmentService {
 
         return assignedSites;
     }
+
+    async unassignSiteFromMember(
+        assignmentId: string,
+        companyId: string
+    ) {
+        const [assignment] = await db
+            .select({
+                id: siteAssignments.id,
+            })
+            .from(siteAssignments)
+            .innerJoin(
+                sites,
+                eq(siteAssignments.siteId, sites.id)
+            )
+            .where(
+                and(
+                    eq(siteAssignments.id, assignmentId),
+                    eq(sites.companyId, companyId)
+                )
+            );
+
+        if (!assignment) {
+            throw new NotFoundError("Site assignment not found");
+        }
+
+        const [deletedAssignment] = await db
+            .delete(siteAssignments)
+            .where(eq(siteAssignments.id, assignmentId))
+            .returning();
+
+        return deletedAssignment;
+    }
 }
 
 export const siteAssignmentService = new SiteAssignmentService();

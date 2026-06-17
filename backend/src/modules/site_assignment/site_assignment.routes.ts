@@ -35,3 +35,10 @@ siteAssignmentRouter.get(
     ),
     siteAssignmentController.getSitesAssignedToMember
 );
+
+siteAssignmentRouter.delete(
+    "/:assignmentId",
+    validateUUID("assignmentId"),
+    authorizeCompanyRole(UserRole.ADMIN),
+    siteAssignmentController.unassignSiteFromMember
+);
