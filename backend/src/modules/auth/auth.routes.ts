@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authController } from "./auth.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
-import { validate } from "../../middleware/validate.middleware.js";
+import { validateSchema } from "../../middleware/validate_schema.middleware.js";
 import { loginSchema, registerSchema } from "./auth.validation.js";
 
 export const authRouter = Router();
@@ -14,13 +14,13 @@ authRouter.get(
 
 authRouter.post(
   "/register",
-  validate(registerSchema),
+  validateSchema(registerSchema),
   authController.register
 );
 
 authRouter.post(
   "/login",
-  validate(loginSchema),
+  validateSchema(loginSchema),
   authController.login
 );
 

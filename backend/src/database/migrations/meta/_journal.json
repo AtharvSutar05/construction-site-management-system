@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1781287766656,
-      "tag": "0000_perpetual_gladiator",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1781336844627,
-      "tag": "0001_cold_joystick",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1781637303916,
-      "tag": "0002_massive_randall_flagg",
+      "when": 1781645434635,
+      "tag": "0000_tan_frightful_four",
       "breakpoints": true
     }
   ]

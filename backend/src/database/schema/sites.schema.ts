@@ -16,7 +16,7 @@ export const sites = pgTable(
             .defaultRandom()
             .primaryKey(),
 
-        companyId: uuid()
+        companyId: uuid("company_id")
             .notNull()
             .references(() => companies.id, {
                 onDelete: "cascade",
@@ -49,15 +49,15 @@ export const sites = pgTable(
             .default(SiteStatus.ACTIVE)
             .notNull(),
 
-        createdBy: uuid()
+        createdBy: uuid("created_by")
             .notNull()
             .references(() => users.id),
 
-        createdAt: timestamp({ withTimezone: true })
+        createdAt: timestamp("created_at", { withTimezone: true })
             .defaultNow()
             .notNull(),
 
-        updatedAt: timestamp({ withTimezone: true })
+        updatedAt: timestamp("updated_at", { withTimezone: true })
             .defaultNow()
             .notNull(),
     },
