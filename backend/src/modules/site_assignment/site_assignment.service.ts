@@ -1,5 +1,5 @@
 import { db } from "../../database/db.js";
-import { sites, siteAssignments, companyMembers } from "../../database/schema/index.js";
+import { users, sites, siteAssignments, companyMembers } from "../../database/schema/index.js";
 import { eq, and } from "drizzle-orm";
 import type { CreateSiteAssignmentInput } from "./site_assignment.validation.js";
 import { NotFoundError, BadRequestError, ConflictError } from "../../shared/errors/index.js";
@@ -61,11 +61,47 @@ class SiteAssignmentService {
                 assignedBy: userId
             })
             .returning();
-        
-        if(!siteAssignment) {
-            throw new Error("Failed to assign site to member");
-        }
+
         return siteAssignment;
+    }
+
+    async getMembersAssignedToSite(
+        companyId: string,
+        siteId: string
+    ) {
+        const [site] = await db
+            .select({id: sites.id})
+            .from(sites)
+            .where(
+                and(
+                    eq(sites.id, siteId),
+                    eq(sites.companyId, companyId)
+                )
+            );
+        if(!site) {
+            throw new NotFoundError("Site not found");
+        }
+        const assignedMembers = await db
+            .select({
+                id: siteAssignments.id,
+                companyMemberId: siteAssignments.companyMemberId,
+                name: users.name,
+                email: users.email,
+                role: companyMembers.role,
+                assignedAt: siteAssignments.assignedAt
+            })
+            .from(siteAssignments)
+            .innerJoin(
+                companyMembers,
+                eq(siteAssignments.companyMemberId, companyMembers.id)
+            )
+            .innerJoin(
+                users,
+                eq(companyMembers.userId, users.id)
+            )
+            .where(eq(siteAssignments.siteId, siteId));
+
+        return assignedMembers;
     }
 }
 

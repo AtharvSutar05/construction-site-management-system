@@ -25,6 +25,30 @@ class SiteAssignmentController {
             next(error);
         }
     }
+
+    getMembersAssignedToSite = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const companyId = req.membership!.companyId;
+            const siteId = req.params.siteId as string;
+
+            const data = await siteAssignmentService.getMembersAssignedToSite(
+                companyId,
+                siteId
+            );
+
+            return res.status(200)
+                .json({
+                    success: true,
+                    data
+                });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export const siteAssignmentController = new SiteAssignmentController();
