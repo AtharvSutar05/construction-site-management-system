@@ -4,6 +4,7 @@ import { eq, and } from "drizzle-orm";
 import type { CreateSiteAssignmentInput } from "./site_assignment.validation.js";
 import { NotFoundError, BadRequestError, ConflictError } from "../../shared/errors/index.js";
 import { UserRole } from "../../shared/enums/role.enum.js";
+import { SiteStatus } from "../../shared/enums/site_status.enum.js";
 
 class SiteAssignmentService {
     async assignSiteToMember(
@@ -12,7 +13,11 @@ class SiteAssignmentService {
         data: CreateSiteAssignmentInput
     ) {
         const [site] = await db
-            .select({ id: sites.id })
+            .select({ 
+                id: sites.id,
+                name: sites.name,
+                status: sites.status
+             })
             .from(sites)
             .where(
                 and(
@@ -22,6 +27,9 @@ class SiteAssignmentService {
             );
         if(!site) {
             throw new NotFoundError("Site not found");
+        }
+        if(site.status === SiteStatus.ARCHIVED) {
+            throw new BadRequestError(`Cannot assign members to an archived site "${site.name}"`);
         }
         const [companyMember] = await db
             .select({
