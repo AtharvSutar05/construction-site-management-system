@@ -1,6 +1,6 @@
 import type { CreateSiteInput, UpdateSiteInput } from "./site.validation.js";
 import { sites } from "../../database/schema/index.js";
-import { db } from "../../database/db.js";
+import { db } from "../../config/db.js";
 import { and, eq } from "drizzle-orm";
 import { ConflictError } from "../../shared/errors/conflict.error.js";
 import { NotFoundError } from "../../shared/errors/not_found.error.js";

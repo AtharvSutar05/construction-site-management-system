@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import { db } from "../../database/db.js";
+import { db } from "../../config/db.js";
 import { companies, type Company, companyMembers } from "../../database/schema/index.js";
 import type { CreateCompanyInput, UpdateCompanyInput } from "./company.validation.js";
 import { UserRole } from "../../shared/enums/role.enum.js";

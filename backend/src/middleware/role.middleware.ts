@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { companyMembers } from "../database/schema/company_members.schema.js";
-import { db } from "../database/db.js";
+import { db } from "../config/db.js";
 import { eq } from "drizzle-orm";
 import { UserRole } from "../shared/enums/role.enum.js";
 import { NotFoundError, ForbiddenError } from "../shared/errors/index.js";

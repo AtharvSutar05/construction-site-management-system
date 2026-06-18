@@ -1,13 +1,11 @@
 import jwt, { type Secret } from "jsonwebtoken";
 import type { AuthPayload } from "../../modules/auth/auth.types.js";
-
-const secret: Secret =
-    process.env.JWT_SECRET as string;
+import { env } from "../../config/env.js";
 
 export const generateToken = (payload: AuthPayload) => {
     return jwt.sign(
         payload,
-        secret,
+        env.JWT_SECRET,
         {
             expiresIn: "7d"
         }
@@ -19,6 +17,6 @@ export const verifyToken = (
 ): AuthPayload => {
   return jwt.verify(
     token,
-    secret
+    env.JWT_SECRET
   ) as AuthPayload;
 };

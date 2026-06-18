@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { db } from "../../database/db.js";
+import { db } from "../../config/db.js";
 import { users, type NewUser } from "../../database/schema/users.schema.js";
 import type { LoginUserInput, RegisterUserInput } from "./auth.types.js";
 import bcrypt from "bcryptjs";

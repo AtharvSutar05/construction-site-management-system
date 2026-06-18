@@ -1,4 +1,4 @@
-import { db } from "../../database/db.js";
+import { db } from "../../config/db.js";
 import { users, sites, siteAssignments, companyMembers } from "../../database/schema/index.js";
 import { eq, and } from "drizzle-orm";
 import type { CreateSiteAssignmentInput } from "./site_assignment.validation.js";

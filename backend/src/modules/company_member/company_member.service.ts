@@ -1,6 +1,6 @@
 import type { InviteMemberInput, UpdateMemberRoleInput } from "./company_member.validation.js";
 import { users, companyMembers } from "../../database/schema/index.js";
-import { db } from "../../database/db.js";
+import { db } from "../../config/db.js";
 import {and, eq } from "drizzle-orm";
 import { ConflictError, ForbiddenError, NotFoundError } from "../../shared/errors/index.js";
 
