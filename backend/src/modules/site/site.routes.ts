@@ -5,6 +5,7 @@ import { validateSchema } from "../../middleware/validate_schema.middleware.js";
 import { createSiteSchema, updateSiteSchema } from "./site.validation.js";
 import { siteController } from "./site.controller.js";
 import { validateUUID } from "../../middleware/validateUUID.middleware.js";
+import { taskController } from "../task/task.controller.js";
 
 export const siteRouter = Router();
 
@@ -58,4 +59,15 @@ siteRouter.delete(
         UserRole.MANAGER
     ),
     siteController.deleteSite
+);
+
+siteRouter.get(
+    "/:siteId/tasks",
+    validateUUID("siteId"),
+    authorizeCompanyRole(
+        UserRole.ADMIN,
+        UserRole.MANAGER,
+        UserRole.ENGINEER
+    ),
+    taskController.getSiteTasks
 );
