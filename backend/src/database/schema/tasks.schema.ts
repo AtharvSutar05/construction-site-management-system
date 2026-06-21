@@ -1,14 +1,14 @@
-import { date, pgEnum, pgTable, text, timestamp, uuid, varchar, check, index} from "drizzle-orm/pg-core";
+import { date, pgEnum, pgTable, text, timestamp, uuid, varchar, check, index } from "drizzle-orm/pg-core";
 import { sites, companyMembers } from "./index.js";
 import { TaskStatus } from "../../shared/enums/task_status.enum.js";
 import { TaskPriority } from "../../shared/enums/task_priority.enum.js";
 import { sql } from "drizzle-orm";
 
 export const taskStatusPgEnum = pgEnum("task_status", [
-   TaskStatus.OPEN,
-   TaskStatus.IN_PROGRESS,
-   TaskStatus.COMPLETED,
-   TaskStatus.CANCELLED 
+    TaskStatus.OPEN,
+    TaskStatus.IN_PROGRESS,
+    TaskStatus.COMPLETED,
+    TaskStatus.CANCELLED
 ]);
 
 export const taskPriorityPgEnum = pgEnum("task_priority", [
@@ -81,7 +81,7 @@ export const tasks = pgTable(
         index("tasks_status_idx").on(table.status),
 
         index("tasks_site_status_idx").on(
-            table.siteId, 
+            table.siteId,
             table.status
         ),
 
